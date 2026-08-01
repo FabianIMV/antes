@@ -70,6 +70,33 @@ export function estado(p: Prediccion): string {
   return p.resultado ? ETIQUETA_RESULTADO[p.resultado] : 'Abierta';
 }
 
+/** Clase de color para un nivel declarado del 1 al 5. */
+export function claseNivel(n: number): string {
+  return `nivel-${Math.min(5, Math.max(1, Math.round(n)))}`;
+}
+
+/**
+ * Convierte una tasa de acierto en un nivel de la misma escala 1–5.
+ *
+ * Los cortes están anclados en el 50%, no repartidos por igual: el azar es el
+ * centro amarillo, y de ahí se sube o se baja. Un 50% no es «medio bueno», es
+ * exactamente nada, y la escala tiene que decir eso.
+ */
+export function nivelDeTasa(tasa: number | null): number | null {
+  if (tasa === null || Number.isNaN(tasa)) return null;
+  if (tasa < 0.35) return 1;
+  if (tasa < 0.45) return 2;
+  if (tasa <= 0.55) return 3;
+  if (tasa <= 0.7) return 4;
+  return 5;
+}
+
+/** Clase de color para una tasa, o cadena vacía si no hay datos. */
+export function claseTasa(tasa: number | null): string {
+  const nivel = nivelDeTasa(tasa);
+  return nivel === null ? '' : claseNivel(nivel);
+}
+
 /**
  * Titular de una tarjeta. Cuando hay asunto, manda el asunto y la condición
  * pasa al detalle. Cuando no lo hay, la condición es la declaración entera y

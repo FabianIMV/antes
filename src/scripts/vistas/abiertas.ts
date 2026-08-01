@@ -5,6 +5,7 @@ import {
   resolver,
 } from '../../lib/datos';
 import {
+  claseNivel,
   cuentaRegresiva,
   detalleTarjeta,
   esc,
@@ -204,8 +205,8 @@ function tarjetaAbierta(p: Prediccion): string {
         <span class="reloj" data-vence="${esc(p.vence_en)}">${cuentaRegresiva(p.vence_en)}</span>
       </div>
       <div class="tarjeta__meta">
-        <span>conf ${p.confianza}</span>
-        <span>imp ${p.importancia}</span>
+        <span class="${claseNivel(p.confianza)}">conf ${p.confianza}</span>
+        <span class="${claseNivel(p.importancia)}">imp ${p.importancia}</span>
         <span>${esc(p.dominio)}</span>
         <span>${etiquetaVentana(p.ventana_minutos)}</span>
         <span>vence ${fechaCorta(p.vence_en)}</span>

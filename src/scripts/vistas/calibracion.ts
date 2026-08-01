@@ -1,5 +1,6 @@
 import {
   LINEA_BASE,
+  type Significancia,
   ambiguas,
   abiertas,
   pct,
@@ -9,7 +10,7 @@ import {
   significancia,
   type Grupo,
 } from '../../lib/estadistica';
-import { esc } from '../../lib/formato';
+import { claseNivel, claseTasa, esc } from '../../lib/formato';
 import { alCambiar, estado } from '../estado';
 
 export function montarCalibracion(): void {
@@ -33,7 +34,7 @@ function render(): string {
   }
 
   return `
-    ${bloqueGlobal(global, sig.texto)}
+    ${bloqueGlobal(global, sig)}
     ${bloqueNivel('Curva de calibración por confianza', porNivel(filas, 'confianza'),
       `Qué porcentaje se cumplió en cada nivel de confianza declarado. Es la única pantalla que
        enseña algo aplicable en el momento de la impresión: si el 5 acierta muy por encima del 3,
@@ -47,15 +48,20 @@ function render(): string {
   `;
 }
 
-function bloqueGlobal(global: Grupo, textoSignificancia: string): string {
+function bloqueGlobal(global: Grupo, sig: Significancia): string {
+  // La cifra grande se apaga mientras el resultado siga siendo compatible con
+  // el azar: el color acompaña al dato, no lo adelanta.
+  const firme = sig.veredicto === 'se-aleja';
+  const color = firme ? claseTasa(global.tasa) : 'muy-tenue';
+
   return `
     <section>
-      <div class="cifra">${pct(global.tasa, 1)}</div>
+      <div class="cifra ${color}">${pct(global.tasa, 1)}</div>
       <p class="tenue pequeno" style="margin-top:0.35rem">
         ${global.aciertos} de ${global.n} predicciones resueltas se cumplieron.
         Línea base del azar en una binaria: <strong>50%</strong>.
       </p>
-      <div class="aviso" style="margin-top:0.75rem">${esc(textoSignificancia)}</div>
+      <div class="aviso${firme ? "" : " aviso--alerta"}" style="margin-top:0.75rem">${esc(sig.texto)}</div>
       <p class="pequeno muy-tenue">
         «Acierto» significa que la condición declarada se cumplió dentro de su ventana.
         Las ambiguas no entran en esta tasa.
@@ -68,7 +74,7 @@ function bloqueNivel(titulo: string, grupos: Grupo[], nota: string): string {
     <section class="bloque">
       <h2>${esc(titulo)}</h2>
       <p class="bloque__nota">${nota}</p>
-      ${grupos.map((g) => filaBarra(g.clave, g)).join('')}
+      ${grupos.map((g) => filaBarra(g.clave, g, claseNivel(Number(g.clave)))).join('')}
       ${leyenda()}
     </section>`;
 }
@@ -103,10 +109,12 @@ function bloqueAmbiguas(nAmbiguas: number, totalCerradas: number, nAbiertas: num
       </p>
       <div class="barra-fila">
         <span class="barra-fila__clave">ambiguas</span>
-        <div class="barra">
+        <div class="barra ${claseAmbiguas(proporcion)}">
           <div class="barra__relleno" style="width:${(proporcion * 100).toFixed(1)}%"></div>
         </div>
-        <span class="barra-fila__valor">${nAmbiguas} / ${totalCerradas}</span>
+        <span class="barra-fila__valor ${claseAmbiguas(proporcion)}">
+          ${nAmbiguas} / ${totalCerradas}
+        </span>
       </div>
       <p class="pequeno muy-tenue" style="margin-top:0.5rem">
         ${nAbiertas} ${nAbiertas === 1 ? 'predicción abierta' : 'predicciones abiertas'} sin resolver.
@@ -115,7 +123,24 @@ function bloqueAmbiguas(nAmbiguas: number, totalCerradas: number, nAbiertas: num
     </section>`;
 }
 
-function filaBarra(clave: string, g: Grupo): string {
+/**
+ * `claseClave` colorea la etiqueta según lo que la fila representa (el nivel
+ * declarado, en confianza e importancia). La barra, en cambio, se colorea por
+ * su tasa, y se apaga cuando el intervalo todavía abarca el azar.
+ */
+/**
+ * Aquí la escala va al revés que en las tasas: ninguna ambigua es lo bueno, y
+ * muchas son el síntoma de condiciones que no permiten fallar.
+ */
+function claseAmbiguas(proporcion: number): string {
+  if (proporcion <= 0.05) return 'nivel-5';
+  if (proporcion <= 0.1) return 'nivel-4';
+  if (proporcion <= 0.2) return 'nivel-3';
+  if (proporcion <= 0.3) return 'nivel-2';
+  return 'nivel-1';
+}
+
+function filaBarra(clave: string, g: Grupo, claseClave = ''): string {
   const ancho = g.tasa === null ? 0 : g.tasa * 100;
   const intervalo =
     g.intervalo && g.n > 0
@@ -124,22 +149,35 @@ function filaBarra(clave: string, g: Grupo): string {
         ).toFixed(1)}%"></div>`
       : '';
 
+  const incierto = !g.intervalo || (g.intervalo[0] <= LINEA_BASE && LINEA_BASE <= g.intervalo[1]);
+  const lectura = incierto ? ' — aún indistinguible del azar' : '';
+
   return `
     <div class="barra-fila">
-      <span class="barra-fila__clave" title="${esc(clave)}">${esc(clave)}</span>
-      <div class="barra" role="img" aria-label="${esc(clave)}: ${pct(g.tasa)} de ${g.n}">
-        <div class="barra__relleno" style="width:${ancho.toFixed(1)}%"></div>
+      <span class="barra-fila__clave ${claseClave}" title="${esc(clave)}">${esc(clave)}</span>
+      <div
+        class="barra ${claseTasa(g.tasa)}"
+        role="img"
+        aria-label="${esc(clave)}: ${pct(g.tasa)} de ${g.n}${lectura}"
+      >
+        <div
+          class="barra__relleno${incierto ? ' barra__relleno--incierto' : ''}"
+          style="width:${ancho.toFixed(1)}%"
+        ></div>
         ${intervalo}
         <div class="barra__azar" style="left:${LINEA_BASE * 100}%"></div>
       </div>
-      <span class="barra-fila__valor">${pct(g.tasa)} · n=${g.n}</span>
+      <span class="barra-fila__valor">
+        <span class="${incierto ? 'incierto' : claseTasa(g.tasa)}">${pct(g.tasa)}</span> · n=${g.n}
+      </span>
     </div>`;
 }
 
 function leyenda(): string {
   return `
     <div class="leyenda">
-      <span>barra: tasa de acierto</span>
+      <span>rojo bajo · amarillo en el 50% · verde alto</span>
+      <span>barra apagada: el IC aún abarca el azar</span>
       <span>línea vertical: 50% (azar)</span>
       <span>línea horizontal: IC 95%</span>
       <span>n: resueltas, sin ambiguas</span>

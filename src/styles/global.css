@@ -8,10 +8,24 @@
   --tenue: #8d93b0;
   --muy-tenue: #5d6280;
   --acento: #c3ad76;
-  --si: #86a7dd;
-  --no: #767c9a;
-  --ambiguo: #b6905f;
+  --si: #78bf8a;
+  --no: #d4796b;
+  --ambiguo: #d8c56b;
   --alerta: #d4796b;
+
+  /*
+   * Escala de magnitud, de menos a más. Se usa para confianza, importancia y
+   * tasas de acierto. El amarillo cae en el centro a propósito: en una tasa,
+   * el centro es el 50% —el azar— y no merece ni premio ni castigo.
+   *
+   * El color nunca va solo: el número o el porcentaje siempre está escrito al
+   * lado, así que quien no distinga rojo de verde no pierde ningún dato.
+   */
+  --nivel-1: #d4796b;
+  --nivel-2: #dc9a5f;
+  --nivel-3: #d8c56b;
+  --nivel-4: #a9c877;
+  --nivel-5: #78bf8a;
 
   --serif: 'Iowan Old Style', 'Source Serif 4', 'Palatino Linotype', Palatino, Georgia,
     'Times New Roman', serif;
@@ -351,6 +365,68 @@ button:focus-visible {
   color: var(--acento);
 }
 
+/* --- Escala de magnitud --------------------------------------------------- */
+
+.nivel-1 {
+  color: var(--nivel-1);
+}
+.nivel-2 {
+  color: var(--nivel-2);
+}
+.nivel-3 {
+  color: var(--nivel-3);
+}
+.nivel-4 {
+  color: var(--nivel-4);
+}
+.nivel-5 {
+  color: var(--nivel-5);
+}
+
+/*
+ * Los botones 1–5 llevan su color desde el principio: así la escala se lee
+ * antes de elegir, no después. El selector compuesto es necesario para ganarle
+ * a `.opcion[aria-pressed]`, que si no devolvería el botón elegido al color
+ * neutro — justo el que más importa que conserve el suyo.
+ */
+.opcion--numero.nivel-1 {
+  color: var(--nivel-1);
+}
+.opcion--numero.nivel-2 {
+  color: var(--nivel-2);
+}
+.opcion--numero.nivel-3 {
+  color: var(--nivel-3);
+}
+.opcion--numero.nivel-4 {
+  color: var(--nivel-4);
+}
+.opcion--numero.nivel-5 {
+  color: var(--nivel-5);
+}
+
+.opcion--numero {
+  opacity: 0.5;
+}
+
+.opcion--numero[aria-pressed='true'] {
+  opacity: 1;
+  border-color: currentColor;
+  background: var(--superficie-alta);
+}
+
+/* Los datos de una tarjeta se leen de un vistazo por color, sin dejar de
+   estar escritos. */
+.tarjeta__meta .nivel-1,
+.tarjeta__meta .nivel-2,
+.tarjeta__meta .nivel-3,
+.tarjeta__meta .nivel-4,
+.tarjeta__meta .nivel-5 {
+  border: 1px solid currentColor;
+  border-radius: var(--radio);
+  padding: 0 0.3rem;
+}
+
 .nota {
   font-size: 0.85rem;
   color: var(--tenue);
@@ -408,8 +484,21 @@ button:focus-visible {
 .barra__relleno {
   position: absolute;
   inset: 0 auto 0 0;
-  background: var(--si);
-  opacity: 0.55;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+/*
+ * Una tasa cuyo intervalo todavía abarca el 50% no distingue nada del azar,
+ * por alta que se vea. Se pinta igual —el color que pediste está ahí— pero
+ * apagada, para que el verde no afirme lo que los datos aún no sostienen.
+ */
+.barra__relleno--incierto {
+  opacity: 0.28;
+}
+
+.barra-fila__valor .incierto {
+  color: var(--muy-tenue);
 }
 
 .barra__intervalo {

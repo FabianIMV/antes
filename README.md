@@ -87,6 +87,21 @@ La pantalla de calibración muestra:
 - **Contador de ambiguas.** Si sube mucho, no habla del azar: habla de que las
   condiciones se están formulando de un modo que no permite fallar.
 
+### El color
+
+Confianza, importancia y tasas comparten una escala de rojo a verde con el
+amarillo en el centro. En las tasas ese centro es el 50%, el azar, y por eso
+no merece ni premio ni castigo.
+
+Dos cautelas para que el color informe y no adule:
+
+- Una tasa cuyo intervalo de confianza todavía abarca el 50% se pinta
+  **apagada**, por alta que se vea. El verde solo se enciende del todo cuando
+  el dato ya sostiene lo que el color afirma; hasta entonces, un 70% con pocas
+  tiradas es indistinguible del azar y la pantalla lo dice.
+- El color nunca va solo. El número o el porcentaje está siempre escrito al
+  lado, así que ni la escala de grises ni un daltonismo hacen perder un dato.
+
 ## Stack
 
 Astro (sitio estático) · Supabase (Postgres + Auth con correo y contraseña) ·
