@@ -1,4 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+// Debe evaluarse antes de crear el cliente: éste borra el hash del enlace.
+import './url-inicial';
 
 const url = import.meta.env.PUBLIC_SUPABASE_URL as string | undefined;
 const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string | undefined;
