@@ -77,12 +77,24 @@ La pantalla de calibración muestra:
 
 ## Stack
 
-Astro (sitio estático) · Supabase (Postgres + Auth con magic link) · sin
-frameworks de UI · desplegado en GitHub Pages con GitHub Actions.
+Astro (sitio estático) · Supabase (Postgres + Auth con correo y contraseña) ·
+sin frameworks de UI · desplegado en GitHub Pages con GitHub Actions.
 
 Mobile-first y usable con una mano. Si falla la escritura, la declaración se
 encola en `localStorage` con su hora real y se sincroniza al reconectar: nunca
 se pierde una declaración por falta de red.
+
+### Acceso
+
+Correo y contraseña, no magic link. El enlace obliga a un salto entre el
+cliente de correo y el navegador; en iOS el correo suele abrirlo en una vista
+web incrustada, que no comparte el almacenamiento del navegador, así que la
+app se carga sin la sesión que el enlace acababa de crear. Con contraseña no
+hay salto, y el llavero del teléfono la rellena.
+
+La recuperación sí va por enlace (**olvidé la contraseña**): es el único camino
+de vuelta, porque las predicciones no se pueden borrar ni transferir a otra
+cuenta. Ábrelo en el navegador, no dentro del cliente de correo.
 
 ---
 
@@ -96,14 +108,23 @@ se pierde una declaración por falta de red.
    [`supabase/schema.sql`](supabase/schema.sql) y ejecútalo. Crea la tabla, los
    índices, los triggers de inmutabilidad y las políticas de Row Level
    Security. El script es idempotente: puedes volver a ejecutarlo.
-3. En **Authentication → Providers**, deja habilitado *Email*. No hace falta
-   contraseña: la app entra por magic link.
+3. En **Authentication → Providers → Email**, deja habilitado *Email* y
+   **desactiva «Confirm email»**. La app entra con correo y contraseña; con la
+   confirmación activada, crear la cuenta obliga a abrir un enlace desde el
+   móvil, que es justo lo que este esquema evita. Si prefieres dejarla
+   activada, la app lo detecta y te dice que confirmes antes de entrar.
 4. En **Authentication → URL Configuration**, añade a *Redirect URLs* la
    dirección donde vaya a vivir la app:
    - `http://localhost:4321/` para desarrollo,
    - `https://<usuario>.github.io/<repo>/` para producción.
+
+   Solo hace falta para la recuperación de contraseña, pero sin ellas ese
+   enlace rebota.
 5. En **Project Settings → API**, copia *Project URL* y la clave **anon /
    public**.
+6. La primera vez, abre la app y pulsa **Crear cuenta**. Es una herramienta
+   personal: si quieres cerrar el registro después, desactiva *Allow new users
+   to sign up* en **Authentication → Providers → Email**.
 
 > La clave `anon` viaja al navegador y eso es correcto: la autorización la
 > impone Row Level Security en el servidor, no el secreto de la clave. La

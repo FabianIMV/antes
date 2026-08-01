@@ -21,13 +21,25 @@ const favicon = `${import.meta.env.BASE_URL}/favicon.svg`.replace(/\/{2,}/g, '/'
     <meta name="theme-color" content="#0a0c18" />
     <meta name="robots" content="noindex" />
     <link rel="icon" href={favicon} type="image/svg+xml" />
-    {/* Inter con `display=swap`: si no hay red, se cae al stack del sistema. */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap"
-    />
+    {/*
+      Inter se carga después de que la app haya arrancado, nunca antes. Una
+      hoja de estilo remota en el <head> bloquea la ejecución de los scripts
+      que la siguen: con la red lenta o filtrada —un portal cautivo, una
+      antena mala— la app no abriría en absoluto, que es justo cuando más
+      urge declarar. Hasta que llegue (o si no llega), manda el stack del
+      sistema definido en global.css.
+    */}
+    <script is:inline>
+      addEventListener('DOMContentLoaded', function () {
+        var fuente = document.createElement('link');
+        fuente.rel = 'stylesheet';
+        fuente.href =
+          'https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap';
+        document.head.appendChild(fuente);
+      });
+    </script>
   </head>
   <body>
     <slot />
