@@ -86,15 +86,26 @@ export function montarSesion({ alRecuperar, alTerminarRecuperacion }: OpcionesSe
     btnOlvide.disabled = valor;
   }
 
-  function credenciales(): { correo: string; clave: string } | null {
+  /**
+   * `largoMinimo` solo se exige al crear una contraseña. Al entrar no: la
+   * cuenta puede tener una más corta —el mínimo de Supabase son 6 caracteres, y
+   * el proyecto puede bajarlo— y una regla de cliente más estricta que la del
+   * servidor no protege nada, deja a su dueño fuera de su propia cuenta sin
+   * llegar a preguntar.
+   */
+  function credenciales(largoMinimo = 0): { correo: string; clave: string } | null {
     const correo = email.value.trim();
     const clave = password.value;
     if (!correo) {
       decir('Falta el correo.', true);
       return null;
     }
-    if (clave.length < LARGO_MINIMO) {
-      decir(`La contraseña debe tener al menos ${LARGO_MINIMO} caracteres.`, true);
+    if (!clave) {
+      decir('Falta la contraseña.', true);
+      return null;
+    }
+    if (clave.length < largoMinimo) {
+      decir(`La contraseña debe tener al menos ${largoMinimo} caracteres.`, true);
       return null;
     }
     return { correo, clave };
@@ -102,7 +113,10 @@ export function montarSesion({ alRecuperar, alTerminarRecuperacion }: OpcionesSe
 
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
-    if (!supabase) return;
+    if (!supabase) {
+      decir('Supabase no está configurado en esta compilación.', true);
+      return;
+    }
 
     const datos = credenciales();
     if (!datos) return;
@@ -125,9 +139,13 @@ export function montarSesion({ alRecuperar, alTerminarRecuperacion }: OpcionesSe
   });
 
   btnCrear.addEventListener('click', async () => {
-    if (!supabase) return;
+    if (!supabase) {
+      decir('Supabase no está configurado en esta compilación.', true);
+      return;
+    }
 
-    const datos = credenciales();
+    // Aquí sí: la contraseña se está creando ahora.
+    const datos = credenciales(LARGO_MINIMO);
     if (!datos) return;
 
     ocupado(true);
@@ -157,7 +175,10 @@ export function montarSesion({ alRecuperar, alTerminarRecuperacion }: OpcionesSe
   });
 
   btnOlvide.addEventListener('click', async () => {
-    if (!supabase) return;
+    if (!supabase) {
+      decir('Supabase no está configurado en esta compilación.', true);
+      return;
+    }
 
     const correo = email.value.trim();
     if (!correo) {

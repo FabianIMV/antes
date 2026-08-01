@@ -53,12 +53,15 @@ const niveles = [1, 2, 3, 4, 5];
       </div>
       <div class="campo">
         <label for="password">Contraseña</label>
+        {/*
+          Sin `minlength`: este campo también sirve para entrar en cuentas cuya
+          contraseña es más corta que el mínimo que pide la app al crearlas.
+        */}
         <input
           type="password"
           id="password"
           name="password"
           autocomplete="current-password"
-          minlength="8"
           required
         />
       </div>
