@@ -236,11 +236,25 @@ const TRADUCCIONES: [RegExp, string][] = [
     /email not confirmed/i,
     'Falta confirmar el correo. Abre el enlace que te llegó, o desactiva «Confirm email» en Supabase.',
   ],
-  [/user already registered|already been registered/i, 'Ya existe una cuenta con ese correo. Entra con tu contraseña.'],
+  [/user already registered|already been registered/i, 'Ya existe una cuenta con ese correo. Pulsa «Entrar», que no envía ningún correo.'],
   [/password should be at least (\d+)/i, 'La contraseña es demasiado corta para lo que exige el proyecto.'],
   [/should be different from the old password/i, 'La contraseña nueva debe ser distinta de la anterior.'],
   [/unable to validate email|invalid email/i, 'El correo no parece válido.'],
-  [/email rate limit|over_email_send_rate_limit|too many requests/i, 'Demasiados intentos seguidos. Espera un minuto.'],
+  // La cuota de correos del SMTP incluido en Supabase se cuenta por hora y es
+  // muy baja. Confundirla con «demasiado rápido» manda a esperar un minuto que
+  // no sirve de nada, así que el mensaje dice de dónde viene y cómo salir.
+  [
+    /email rate limit|over_email_send_rate_limit|email_send_rate_limit|quota|exceeded/i,
+    'Se agotó la cuota de correos de Supabase, que en el plan gratuito es de unos pocos por hora. ' +
+      'No falta nada por configurar en la app: si ya creaste y confirmaste la cuenta, pulsa «Entrar» — ' +
+      'entrar con contraseña no envía ningún correo. Para levantar el límite, configura un SMTP propio ' +
+      'en Project Settings → Authentication → SMTP Settings.',
+  ],
+  [
+    /for security purposes, you can only request this after (\d+) seconds?/i,
+    'Supabase obliga a esperar unos segundos entre envíos. Prueba de nuevo en un momento.',
+  ],
+  [/too many requests|rate limit/i, 'Demasiadas peticiones seguidas. Espera un momento.'],
   [/signups not allowed|signup is disabled/i, 'El registro está desactivado en Supabase (Authentication → Providers → Email).'],
   [/failed to fetch|network/i, 'Sin conexión con Supabase.'],
 ];
