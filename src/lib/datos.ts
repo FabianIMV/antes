@@ -71,9 +71,9 @@ export async function declarar(d: Declaracion): Promise<Prediccion> {
   const fila: Prediccion = {
     id: almacen.nuevoIdLocal(),
     creada_en,
-    pregunta: d.pregunta.trim(),
+    pregunta: d.pregunta?.trim() || null,
     condicion: d.condicion.trim(),
-    significado_si: d.significado_si.trim() || 'sí',
+    significado_si: d.significado_si?.trim() || null,
     ventana_minutos: d.ventana_minutos,
     vence_en: vencimiento(creada_en, d.ventana_minutos),
     confianza: d.confianza,

@@ -72,12 +72,12 @@ export function montarDeclarar(irA: (vista: string) => void): void {
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
 
-    const pregunta = valor('#pregunta');
+    const pregunta = valor('#pregunta') || null;
     const condicion = valor('#condicion');
-    const significado_si = valor('#significado_si') || 'sí';
+    const significado_si = valor('#significado_si') || null;
     const minutos = ventanaElegida ?? Number(inputPersonalizada.value);
 
-    const falta = validar({ pregunta, condicion, minutos, confianza, importancia, dominio });
+    const falta = validar({ condicion, minutos, confianza, importancia, dominio });
     if (falta) {
       estadoTexto.className = 'pequeno';
       estadoTexto.style.color = 'var(--alerta)';
@@ -117,16 +117,16 @@ export function montarDeclarar(irA: (vista: string) => void): void {
   document.addEventListener('antes:dominios', () => pintarDominios(grupoDominio));
 }
 
+// `pregunta` y `significado_si` no se validan: son opcionales. Lo único
+// imprescindible es lo que tiene que poder fallar.
 function validar(d: {
-  pregunta: string;
   condicion: string;
   minutos: number;
   confianza: number | null;
   importancia: number | null;
   dominio: string | null;
 }): string | null {
-  if (!d.pregunta) return 'Falta la pregunta.';
-  if (!d.condicion) return 'Falta la condición.';
+  if (!d.condicion) return 'Falta lo que tiene que pasar.';
   if (!Number.isFinite(d.minutos) || d.minutos < 1) return 'Falta la ventana temporal.';
   if (d.minutos > 525600) return 'La ventana no puede pasar de un año.';
   if (!d.confianza) return 'Falta la confianza.';
@@ -166,7 +166,6 @@ function reiniciar(
   inputPersonalizada: HTMLInputElement
 ): void {
   form.reset();
-  document.querySelector<HTMLInputElement>('#significado_si')!.value = 'sí';
   inputPersonalizada.value = '';
   campoPersonalizada.hidden = true;
 
