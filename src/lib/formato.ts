@@ -70,6 +70,24 @@ export function estado(p: Prediccion): string {
   return p.resultado ? ETIQUETA_RESULTADO[p.resultado] : 'Abierta';
 }
 
+/**
+ * Titular de una tarjeta. Cuando hay asunto, manda el asunto y la condición
+ * pasa al detalle. Cuando no lo hay, la condición es la declaración entera y
+ * ocupa el titular: nada de rellenar el hueco con una pregunta inventada.
+ */
+export function titularTarjeta(p: Prediccion): string {
+  return esc(p.pregunta ?? p.condicion);
+}
+
+/** Línea bajo el titular. Cadena vacía cuando no hay nada más que decir. */
+export function detalleTarjeta(p: Prediccion): string {
+  if (p.pregunta) {
+    const condicion = `Si <em>${esc(p.condicion)}</em>`;
+    return p.significado_si ? `${condicion} → ${esc(p.significado_si)}` : condicion;
+  }
+  return p.significado_si ? `Significaría: ${esc(p.significado_si)}` : '';
+}
+
 /** Escapa texto antes de meterlo en el DOM por innerHTML. */
 export function esc(texto: unknown): string {
   return String(texto ?? '')

@@ -4,8 +4,8 @@ import { ETIQUETA_RESULTADO, etiquetaVentana } from './formato';
 const COLUMNAS = [
   'id',
   'creada_en',
-  'pregunta',
   'condicion',
+  'pregunta',
   'significado_si',
   'ventana_minutos',
   'vence_en',
@@ -42,15 +42,15 @@ export function aMarkdown(filas: Prediccion[]): string {
     'Un acierto significa que la condición declarada se cumplió dentro de su ventana.',
     'Las ambiguas no entran en la tasa de acierto.',
     '',
-    '| Declarada | Pregunta | Condición | Si se cumple | Ventana | Conf. | Imp. | Dominio | Resultado | Resuelta | Nota |',
+    '| Declarada | Condición | Asunto | Si se cumple | Ventana | Conf. | Imp. | Dominio | Resultado | Resuelta | Nota |',
     '| --- | --- | --- | --- | --- | ---: | ---: | --- | --- | --- | --- |',
   ];
 
   const cuerpo = filas.map((f) =>
     [
       f.creada_en,
-      celdaMD(f.pregunta),
       celdaMD(f.condicion),
+      celdaMD(f.pregunta),
       celdaMD(f.significado_si),
       etiquetaVentana(f.ventana_minutos),
       String(f.confianza),
@@ -58,15 +58,15 @@ export function aMarkdown(filas: Prediccion[]): string {
       celdaMD(f.dominio),
       f.resultado ? ETIQUETA_RESULTADO[f.resultado] : 'Abierta',
       f.resuelta_en ?? '',
-      celdaMD(f.nota_posterior ?? ''),
+      celdaMD(f.nota_posterior),
     ].join(' | ')
   );
 
   return `${cabecera.join('\n')}\n| ${cuerpo.join(' |\n| ')} |\n`;
 }
 
-function celdaMD(texto: string): string {
-  return texto.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+function celdaMD(texto: string | null): string {
+  return (texto ?? '').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 }
 
 export function descargar(nombre: string, contenido: string, tipo: string): void {

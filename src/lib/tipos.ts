@@ -3,9 +3,15 @@ export type Resultado = 'si' | 'no' | 'ambiguo';
 export interface Prediccion {
   id: string;
   creada_en: string;
-  pregunta: string;
+  /**
+   * El asunto al que apunta, cuando apunta a alguno. Es opcional a propósito:
+   * no toda impresión llega en forma de pregunta, y obligar a inventarle una
+   * deforma lo que se estaba declarando.
+   */
+  pregunta: string | null;
   condicion: string;
-  significado_si: string;
+  /** Qué respondería el cumplimiento. Solo aplica si hay un asunto detrás. */
+  significado_si: string | null;
   ventana_minutos: number;
   vence_en: string;
   confianza: number;
@@ -20,9 +26,9 @@ export interface Prediccion {
 }
 
 export interface Declaracion {
-  pregunta: string;
+  pregunta: string | null;
   condicion: string;
-  significado_si: string;
+  significado_si: string | null;
   ventana_minutos: number;
   confianza: number;
   importancia: number;

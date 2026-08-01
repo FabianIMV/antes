@@ -1,5 +1,12 @@
 import { aCSV, aMarkdown, descargar, nombreArchivo } from '../../lib/exportar';
-import { ETIQUETA_RESULTADO, esc, etiquetaVentana, fechaLegible } from '../../lib/formato';
+import {
+  ETIQUETA_RESULTADO,
+  detalleTarjeta,
+  esc,
+  etiquetaVentana,
+  fechaLegible,
+  titularTarjeta,
+} from '../../lib/formato';
 import { cerradaAutomaticamente } from '../../lib/datos';
 import type { Prediccion } from '../../lib/tipos';
 import { alCambiar, estado } from '../estado';
@@ -68,10 +75,10 @@ function tarjeta(p: Prediccion): string {
   return `
     <article class="tarjeta">
       <div class="tarjeta__cabeza">
-        <div class="tarjeta__pregunta">${esc(p.pregunta)}</div>
+        <div class="tarjeta__pregunta">${titularTarjeta(p)}</div>
         <span class="marca-resultado marca-resultado--${clase}">${esc(etiqueta)}</span>
       </div>
-      <div class="tarjeta__condicion">Si <em>${esc(p.condicion)}</em> → ${esc(p.significado_si)}</div>
+      ${detalleTarjeta(p) ? `<div class="tarjeta__condicion">${detalleTarjeta(p)}</div>` : ''}
       <div class="tarjeta__meta">
         <span>${fechaLegible(p.creada_en)}</span>
         <span>conf ${p.confianza}</span>

@@ -4,7 +4,14 @@ import {
   enVentanaDeCorreccion,
   resolver,
 } from '../../lib/datos';
-import { cuentaRegresiva, esc, etiquetaVentana, fechaCorta } from '../../lib/formato';
+import {
+  cuentaRegresiva,
+  detalleTarjeta,
+  esc,
+  etiquetaVentana,
+  fechaCorta,
+  titularTarjeta,
+} from '../../lib/formato';
 import { abiertas } from '../../lib/estadistica';
 import type { Prediccion, Resultado } from '../../lib/tipos';
 import { alCambiar, estado, limpiarAvisoVencimiento, mensaje, recargar } from '../estado';
@@ -191,10 +198,8 @@ function tarjetaAbierta(p: Prediccion): string {
     <article class="tarjeta">
       <div class="tarjeta__cabeza">
         <div>
-          <div class="tarjeta__pregunta">${esc(p.pregunta)}</div>
-          <div class="tarjeta__condicion">
-            Si <em>${esc(p.condicion)}</em> → ${esc(p.significado_si)}
-          </div>
+          <div class="tarjeta__pregunta">${titularTarjeta(p)}</div>
+          ${detalleTarjeta(p) ? `<div class="tarjeta__condicion">${detalleTarjeta(p)}</div>` : ''}
         </div>
         <span class="reloj" data-vence="${esc(p.vence_en)}">${cuentaRegresiva(p.vence_en)}</span>
       </div>
@@ -206,8 +211,8 @@ function tarjetaAbierta(p: Prediccion): string {
         <span>vence ${fechaCorta(p.vence_en)}</span>
         ${p.pendiente ? '<span style="color:var(--acento)">sin sincronizar</span>' : ''}
       </div>
-      <label class="sr-only" for="nota-${esc(p.id)}">Nota posterior</label>
-      <textarea id="nota-${esc(p.id)}" placeholder="qué pasó realmente (opcional)"></textarea>
+      <label for="nota-${esc(p.id)}">Qué pasó realmente <span class="muy-tenue">— opcional</span></label>
+      <textarea id="nota-${esc(p.id)}"></textarea>
       <div class="fila-botones" style="margin-top:0.5rem">
         <button type="button" class="boton boton--secundario" data-accion="si" data-id="${esc(p.id)}">
           Se cumplió
@@ -230,8 +235,8 @@ function tarjetaCorreccion(p: Prediccion): string {
     <article class="tarjeta">
       <div class="tarjeta__cabeza">
         <div>
-          <div class="tarjeta__pregunta">${esc(p.pregunta)}</div>
-          <div class="tarjeta__condicion">Si <em>${esc(p.condicion)}</em> → ${esc(p.significado_si)}</div>
+          <div class="tarjeta__pregunta">${titularTarjeta(p)}</div>
+          ${detalleTarjeta(p) ? `<div class="tarjeta__condicion">${detalleTarjeta(p)}</div>` : ''}
         </div>
         <span class="marca-resultado marca-resultado--no">no</span>
       </div>
@@ -239,8 +244,8 @@ function tarjetaCorreccion(p: Prediccion): string {
         <span>venció ${fechaCorta(p.vence_en)}</span>
         <span>corregible hasta ${fechaCorta(limite.toISOString())}</span>
       </div>
-      <label class="sr-only" for="nota-corr-${esc(p.id)}">Nota posterior</label>
-      <textarea id="nota-corr-${esc(p.id)}" placeholder="qué pasó realmente (opcional)"></textarea>
+      <label for="nota-corr-${esc(p.id)}">Qué pasó realmente <span class="muy-tenue">— opcional</span></label>
+      <textarea id="nota-corr-${esc(p.id)}"></textarea>
       <div style="margin-top:0.5rem">
         <button type="button" class="boton boton--linea" data-accion="corregir" data-id="${esc(p.id)}">
           Sí se cumplió, estaba sin teléfono

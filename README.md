@@ -1,8 +1,8 @@
 # antes
 
 Registro y calibración de intuición. Se declara una predicción **antes** del
-hecho —pregunta, signo, plazo, confianza e importancia— y después solo se
-anota lo que pasó. El registro no se puede editar.
+hecho —qué tiene que pasar, en qué plazo, con cuánta confianza y cuánto
+importa— y después solo se anota lo que pasó. El registro no se puede editar.
 
 Nace de un problema concreto: llevar años haciendo predicciones informales
 («si pasa un auto blanco en los próximos dos minutos, la respuesta es sí») y
@@ -28,7 +28,7 @@ mientras se hace; se siente como precisar. Por eso no puede quedar disponible.
 
 En concreto:
 
-1. **Lo declarado se congela en el INSERT.** Pregunta, condición, significado,
+1. **Lo declarado se congela en el INSERT.** Condición, asunto, significado,
    ventana, confianza, importancia y dominio son inmutables a partir de ahí.
    Un trigger `BEFORE UPDATE` rechaza cualquier cambio en esos campos, venga de
    la app, del editor SQL de Supabase o de `curl`. La interfaz ni siquiera
@@ -49,6 +49,18 @@ En concreto:
    abandonarla, y abandonarlas es justo lo que esta herramienta existe para
    impedir. Lo que no se puede resolver se marca «ambiguo», y las ambiguas
    cuentan como categoría propia en las estadísticas: no desaparecen.
+
+## Qué se declara
+
+Lo único obligatorio es **qué tiene que pasar**: algo observable que pueda
+cumplirse o fallar dentro de un plazo cerrado. Sin eso no hay nada que medir.
+
+El **asunto** —la pregunta o el tema al que apunta— es opcional, igual que
+**qué significaría** su cumplimiento. Muchas impresiones no llegan en forma de
+pregunta: a veces solo se sabe que algo va a pasar, sin que responda a nada.
+Obligar a inventarle una pregunta deforma justo aquello que se quería registrar
+sin adornos, así que la app no la pide. Cuando sí hay una consulta detrás
+—«si pasa un auto blanco, la respuesta es sí»—, los dos campos están ahí.
 
 ## Qué mide
 
@@ -108,6 +120,10 @@ cuenta. Ábrelo en el navegador, no dentro del cliente de correo.
    [`supabase/schema.sql`](supabase/schema.sql) y ejecútalo. Crea la tabla, los
    índices, los triggers de inmutabilidad y las políticas de Row Level
    Security. El script es idempotente: puedes volver a ejecutarlo.
+
+   Si ya tenías el esquema de una versión anterior, ejecuta además las
+   migraciones de [`supabase/`](supabase/) que aún no hayas aplicado, en orden.
+   Ninguna toca las filas existentes.
 3. En **Authentication → Providers → Email**, deja habilitado *Email* y
    **desactiva «Confirm email»**. La app entra con correo y contraseña; con la
    confirmación activada, crear la cuenta obliga a abrir un enlace desde el

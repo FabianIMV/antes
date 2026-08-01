@@ -20,9 +20,12 @@ create table if not exists public.predicciones (
   creada_en        timestamptz not null default now(),
 
   -- Lo declarado. Inmutable a partir del INSERT.
-  pregunta         text        not null check (length(btrim(pregunta)) > 0),
+  -- `condicion` es lo único obligatorio: es lo que puede fallar, y sin algo que
+  -- pueda fallar no hay nada que medir. El asunto y su respuesta son opcionales
+  -- porque no toda impresión llega en forma de pregunta.
+  pregunta         text        check (pregunta is null or length(btrim(pregunta)) > 0),
   condicion        text        not null check (length(btrim(condicion)) > 0),
-  significado_si   text        not null default 'sí' check (length(btrim(significado_si)) > 0),
+  significado_si   text        check (significado_si is null or length(btrim(significado_si)) > 0),
   ventana_minutos  integer     not null check (ventana_minutos > 0 and ventana_minutos <= 525600),
   vence_en         timestamptz not null,
   confianza        smallint    not null check (confianza between 1 and 5),
@@ -42,8 +45,9 @@ create table if not exists public.predicciones (
 );
 
 comment on table  public.predicciones             is 'Predicciones declaradas antes del hecho. Solo se añade el resultado; lo declarado nunca cambia.';
-comment on column public.predicciones.pregunta    is 'El asunto real que se consulta.';
-comment on column public.predicciones.condicion   is 'El signo acordado. Debe ser falsable y observable dentro de la ventana.';
+comment on column public.predicciones.pregunta    is 'El asunto al que apunta, cuando apunta a alguno. Opcional: no toda impresión llega en forma de pregunta.';
+comment on column public.predicciones.condicion   is 'Lo declarado: qué tiene que pasar. Único campo obligatorio, falsable y observable dentro de la ventana.';
+comment on column public.predicciones.significado_si is 'Qué respondería el cumplimiento. Opcional, solo aplica cuando hay un asunto detrás.';
 comment on column public.predicciones.importancia is 'Cuánto importa personalmente el resultado (1-5). Permite cruzar precisión contra deseo.';
 comment on column public.predicciones.vence_en    is 'Calculado por el servidor a partir de creada_en + ventana_minutos. No lo fija el cliente.';
 

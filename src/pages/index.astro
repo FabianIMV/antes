@@ -116,32 +116,18 @@ const niveles = [1, 2, 3, 4, 5];
     <main class="contenedor vista" id="vista-declarar">
       <h1>Declarar</h1>
       <p class="tenue pequeno">
-        Una vez guardada, ni la pregunta ni la condición ni el plazo pueden cambiar.
+        Una vez guardada, ni lo declarado ni el plazo pueden cambiar.
       </p>
 
       <form id="form-declarar" novalidate>
         <div class="campo">
-          <label for="pregunta">Pregunta</label>
-          <input
-            type="text"
-            id="pregunta"
-            name="pregunta"
-            required
-            maxlength="500"
-            placeholder="¿Acepto la oferta?"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="campo">
-          <label for="condicion">Condición</label>
+          <label for="condicion">Qué tiene que pasar</label>
           <input
             type="text"
             id="condicion"
             name="condicion"
             required
             maxlength="500"
-            placeholder="pasa un auto blanco frente a la ventana"
             autocomplete="off"
           />
           <p class="pequeno muy-tenue" style="margin:0.35rem 0 0">
@@ -150,15 +136,28 @@ const niveles = [1, 2, 3, 4, 5];
         </div>
 
         <div class="campo">
-          <label for="significado_si">Si se cumple, significa</label>
+          <label for="pregunta">Asunto <span class="muy-tenue">— opcional</span></label>
+          <input type="text" id="pregunta" name="pregunta" maxlength="500" autocomplete="off" />
+          <p class="pequeno muy-tenue" style="margin:0.35rem 0 0">
+            La pregunta o el tema al que apunta, cuando apunta a alguno. Una impresión suelta no
+            necesita ninguno: se declara igual y se mide igual.
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="significado_si">
+            Si se cumple, significa <span class="muy-tenue">— opcional</span>
+          </label>
           <input
             type="text"
             id="significado_si"
             name="significado_si"
             maxlength="200"
-            value="sí"
             autocomplete="off"
           />
+          <p class="pequeno muy-tenue" style="margin:0.35rem 0 0">
+            Solo tiene sentido si hay un asunto detrás al que responder.
+          </p>
         </div>
 
         <div class="campo">
@@ -181,15 +180,8 @@ const niveles = [1, 2, 3, 4, 5];
             </button>
           </div>
           <div id="campo-ventana-personalizada" hidden style="margin-top:0.5rem">
-            <label for="ventana_personalizada" class="sr-only">Minutos</label>
-            <input
-              type="number"
-              id="ventana_personalizada"
-              min="1"
-              max="525600"
-              step="1"
-              placeholder="minutos"
-            />
+            <label for="ventana_personalizada">Minutos</label>
+            <input type="number" id="ventana_personalizada" min="1" max="525600" step="1" />
           </div>
         </div>
 
