@@ -1,0 +1,265 @@
+---
+import Base from '../layouts/Base.astro';
+import { VENTANAS_RAPIDAS } from '../lib/formato';
+
+const niveles = [1, 2, 3, 4, 5];
+---
+
+<Base
+  titulo="antes — registro y calibración de intuición"
+  descripcion="Declarar antes, medir después. Un registro de predicciones que no permite editarse."
+>
+  <header class="cabecera">
+    <div class="contenedor">
+      <span class="marca">antes</span>
+      <span class="lema">declarar primero, mirar después</span>
+    </div>
+  </header>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- Aviso de configuración ausente                                       -->
+  <!-- ------------------------------------------------------------------ -->
+  <div class="contenedor" id="sin-configurar" hidden>
+    <div class="aviso aviso--alerta">
+      <strong>Falta configurar Supabase.</strong> Define <code>PUBLIC_SUPABASE_URL</code> y
+      <code>PUBLIC_SUPABASE_ANON_KEY</code> (ver el README). Mientras tanto, lo que declares se
+      guarda solo en este dispositivo.
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- Sesión                                                              -->
+  <!-- ------------------------------------------------------------------ -->
+  <main class="contenedor" id="pantalla-sesion" hidden>
+    <h1>Entrar</h1>
+    <p class="tenue pequeno">
+      Se envía un enlace de acceso al correo. Sin contraseña. Los registros son privados: cada
+      cuenta solo puede leer y escribir los suyos.
+    </p>
+    <form id="form-sesion" novalidate>
+      <div class="campo">
+        <label for="email">Correo</label>
+        <input type="email" id="email" name="email" autocomplete="email" required />
+      </div>
+      <button type="submit" class="boton" id="btn-enviar-enlace">Enviar enlace</button>
+    </form>
+    <p id="estado-sesion" class="pequeno tenue" style="margin-top:1rem" aria-live="polite"></p>
+  </main>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- App                                                                 -->
+  <!-- ------------------------------------------------------------------ -->
+  <div id="app" hidden>
+    <!-- ================= Declarar ================= -->
+    <main class="contenedor vista" id="vista-declarar">
+      <h1>Declarar</h1>
+      <p class="tenue pequeno">
+        Una vez guardada, ni la pregunta ni la condición ni el plazo pueden cambiar.
+      </p>
+
+      <form id="form-declarar" novalidate>
+        <div class="campo">
+          <label for="pregunta">Pregunta</label>
+          <input
+            type="text"
+            id="pregunta"
+            name="pregunta"
+            required
+            maxlength="500"
+            placeholder="¿Acepto la oferta?"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="condicion">Condición</label>
+          <input
+            type="text"
+            id="condicion"
+            name="condicion"
+            required
+            maxlength="500"
+            placeholder="pasa un auto blanco frente a la ventana"
+            autocomplete="off"
+          />
+          <p class="pequeno muy-tenue" style="margin:0.35rem 0 0">
+            Debe poder observarse y poder fallar. Si no se puede fallar, no mide nada.
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="significado_si">Si se cumple, significa</label>
+          <input
+            type="text"
+            id="significado_si"
+            name="significado_si"
+            maxlength="200"
+            value="sí"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo">
+          <span class="etiqueta" id="et-ventana">Ventana</span>
+          <div class="grupo-opciones" role="group" aria-labelledby="et-ventana" id="grupo-ventana">
+            {
+              VENTANAS_RAPIDAS.map((v) => (
+                <button
+                  type="button"
+                  class="opcion"
+                  data-ventana={v.minutos}
+                  aria-pressed={v.minutos === 5 ? 'true' : 'false'}
+                >
+                  {v.etiqueta}
+                </button>
+              ))
+            }
+            <button type="button" class="opcion" data-ventana="personalizado" aria-pressed="false">
+              personalizado
+            </button>
+          </div>
+          <div id="campo-ventana-personalizada" hidden style="margin-top:0.5rem">
+            <label for="ventana_personalizada" class="sr-only">Minutos</label>
+            <input
+              type="number"
+              id="ventana_personalizada"
+              min="1"
+              max="525600"
+              step="1"
+              placeholder="minutos"
+            />
+          </div>
+        </div>
+
+        <div class="campo">
+          <span class="etiqueta" id="et-confianza">Confianza</span>
+          <div
+            class="grupo-opciones"
+            role="group"
+            aria-labelledby="et-confianza"
+            id="grupo-confianza"
+          >
+            {
+              niveles.map((n) => (
+                <button
+                  type="button"
+                  class="opcion opcion--numero"
+                  data-valor={n}
+                  aria-pressed="false"
+                >
+                  {n}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="campo">
+          <span class="etiqueta" id="et-importancia">Importancia</span>
+          <div
+            class="grupo-opciones"
+            role="group"
+            aria-labelledby="et-importancia"
+            id="grupo-importancia"
+          >
+            {
+              niveles.map((n) => (
+                <button
+                  type="button"
+                  class="opcion opcion--numero"
+                  data-valor={n}
+                  aria-pressed="false"
+                >
+                  {n}
+                </button>
+              ))
+            }
+          </div>
+          <p class="pequeno muy-tenue" style="margin:0.35rem 0 0">
+            Cuánto te importa el resultado, no cuánto crees que acertarás.
+          </p>
+        </div>
+
+        <div class="campo">
+          <span class="etiqueta" id="et-dominio">Dominio</span>
+          <div class="grupo-opciones" role="group" aria-labelledby="et-dominio" id="grupo-dominio">
+          </div>
+          <button type="button" class="enlace-discreto" id="btn-nuevo-dominio">
+            añadir dominio
+          </button>
+        </div>
+
+        <button type="submit" class="boton" id="btn-declarar">Declarar</button>
+        <p id="estado-declarar" class="pequeno" style="margin-top:0.75rem" aria-live="polite"></p>
+      </form>
+    </main>
+
+    <!-- ================= Abiertas ================= -->
+    <main class="contenedor vista" id="vista-abiertas" hidden>
+      <h1>Abiertas</h1>
+      <div id="aviso-vencidas" hidden></div>
+      <div id="lista-abiertas"></div>
+
+      <section id="seccion-correccion" hidden>
+        <h2 style="margin-top:1.75rem">Cerradas al vencer</h2>
+        <p class="pequeno muy-tenue">
+          El plazo venció sin que la condición se cumpliera, así que quedaron en «no». Si estabas
+          sin teléfono y sí se cumplió, puedes corregirlo durante los 10 minutos siguientes al
+          vencimiento. Después, no.
+        </p>
+        <div id="lista-correccion"></div>
+      </section>
+    </main>
+
+    <!-- ================= Calibración ================= -->
+    <main class="contenedor vista" id="vista-calibracion" hidden>
+      <h1>Calibración</h1>
+      <div id="contenido-calibracion"></div>
+    </main>
+
+    <!-- ================= Historial ================= -->
+    <main class="contenedor vista" id="vista-historial" hidden>
+      <h1>Historial</h1>
+      <div class="filtros">
+        <label for="filtro-resultado" class="sr-only">Filtrar por resultado</label>
+        <select id="filtro-resultado">
+          <option value="">Todos los resultados</option>
+          <option value="abierta">Abiertas</option>
+          <option value="si">Se cumplió</option>
+          <option value="no">No se cumplió</option>
+          <option value="ambiguo">Ambiguo</option>
+        </select>
+        <label for="filtro-dominio" class="sr-only">Filtrar por dominio</label>
+        <select id="filtro-dominio">
+          <option value="">Todos los dominios</option>
+        </select>
+      </div>
+      <div class="fila-botones" style="margin-bottom:1rem">
+        <button type="button" class="boton boton--secundario" id="btn-md">Exportar Markdown</button>
+        <button type="button" class="boton boton--secundario" id="btn-csv">Exportar CSV</button>
+      </div>
+      <p id="resumen-historial" class="pequeno muy-tenue"></p>
+      <div id="lista-historial"></div>
+
+      <div class="bloque">
+        <button type="button" class="enlace-discreto" id="btn-salir">Cerrar sesión</button>
+        <span class="pequeno muy-tenue" id="cuenta-actual"></span>
+      </div>
+    </main>
+
+    <nav class="nav" aria-label="Secciones">
+      <button type="button" class="nav__boton" data-vista="declarar" aria-current="page">
+        Declarar
+      </button>
+      <button type="button" class="nav__boton" data-vista="abiertas">
+        Abiertas<span class="nav__contador" id="contador-abiertas"></span>
+      </button>
+      <button type="button" class="nav__boton" data-vista="calibracion">Calibración</button>
+      <button type="button" class="nav__boton" data-vista="historial">Historial</button>
+    </nav>
+  </div>
+
+  <script>
+    import '../scripts/app';
+  </script>
+</Base>
