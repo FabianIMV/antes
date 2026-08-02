@@ -1,6 +1,7 @@
 import { aCSV, aMarkdown, descargar, nombreArchivo } from '../../lib/exportar';
 import {
   ETIQUETA_RESULTADO,
+  claseNivel,
   detalleTarjeta,
   esc,
   etiquetaVentana,
@@ -81,8 +82,8 @@ function tarjeta(p: Prediccion): string {
       ${detalleTarjeta(p) ? `<div class="tarjeta__condicion">${detalleTarjeta(p)}</div>` : ''}
       <div class="tarjeta__meta">
         <span>${fechaLegible(p.creada_en)}</span>
-        <span>conf ${p.confianza}</span>
-        <span>imp ${p.importancia}</span>
+        <span class="${claseNivel(p.confianza)}">conf ${p.confianza}</span>
+        <span class="${claseNivel(p.importancia)}">imp ${p.importancia}</span>
         <span>${esc(p.dominio)}</span>
         <span>${etiquetaVentana(p.ventana_minutos)}</span>
         ${automatica ? '<span>cerrada al vencer</span>' : ''}

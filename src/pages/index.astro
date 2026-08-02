@@ -197,7 +197,7 @@ const niveles = [1, 2, 3, 4, 5];
               niveles.map((n) => (
                 <button
                   type="button"
-                  class="opcion opcion--numero"
+                  class={`opcion opcion--numero nivel-${n}`}
                   data-valor={n}
                   aria-pressed="false"
                 >
@@ -220,7 +220,7 @@ const niveles = [1, 2, 3, 4, 5];
               niveles.map((n) => (
                 <button
                   type="button"
-                  class="opcion opcion--numero"
+                  class={`opcion opcion--numero nivel-${n}`}
                   data-valor={n}
                   aria-pressed="false"
                 >
